@@ -1,0 +1,77 @@
+from pygame import*
+from sys import exit
+
+
+#Main Window settings
+mainWin = display.set_mode((700, 500)) #Window size X/Y
+
+background = image.load("background.jpg") #Background image
+background = transform.scale(background, (700, 500)) #Background size X/Y
+
+class heroSprite(sprite.Sprite):
+    #Hero settings
+    def __init__(self, filepath, heroX, heroY, heroWidth, heroLength, speed):
+        super().__init__()
+        self.heroImage = transform.scale(image.load(filepath), (heroWidth, heroLength)) #load sprite image and set sprite size X/Y
+        self.heroX = heroX #sprite starting X position
+        self.heroY = heroY #Spirite starting Y position
+
+        #Gets hitbox size from sprite size
+        self.rect = self.heroImage.get_rect() #Ties hitbox to sprite
+        self.rect.x = heroX
+        self.rect.y = heroY
+        
+        self.speed = speed 
+    #Draw hero
+    def drawHero(self):
+        mainWin.blit(self.heroImage, (self.rect.x, self.rect.y)) #drawing the sprite into the window
+    
+    #Charecter controls
+    def charControls(self):
+        keysControl = key.get_pressed() #Gets 'Key Pressed' function
+        if keysControl[K_a] and self.rect.x > 5: #Left movement
+            self.rect.x -= self.speed
+
+        if keysControl[K_d] and self.rect.x <= 650: #Right movement
+            self.rect.x += self.speed
+
+        if keysControl[K_w] and self.rect.y > 5: #Up movement
+            self.rect.y -= self.speed
+
+        if keysControl[K_s] and self.rect.y <= 450: #Down movement
+            self.rect.y += self.speed
+
+class ghost(heroSprite):
+    def update(self):
+        if self.rect.x <= 650:
+            self.side = "right"
+        if self.rect.x >= 700 - heroWidth:
+            self.side = "left"
+            
+        if self.side == "left":
+            self.rect.x -= self.speed
+        else:
+            self.rect.x += self.speed
+    
+
+#Create new hero object
+newHero = heroSprite("hero.png", 350, 250, 64, 64, 5)
+clock = time.Clock() #import clock for setting FPS
+
+#game LOOP
+run = True
+while run:
+    for i in event.get(): #checks if exit button has been clicked
+        if i.type == QUIT:
+            quit()
+            exit()
+    
+    mainWin.blit(background,(0, 0)) #background image placement (fill screen 0,0 top left corner)
+    newHero.drawHero()
+    newHero.charControls()
+    
+    display.update() #updates display
+    clock.tick(30) #sets FPS (not necessary for simple games)
+    
+
+    
