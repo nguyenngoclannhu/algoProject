@@ -1,0 +1,157 @@
+#create a memory card application
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QMessageBox, QRadioButton, QGroupBox, QButtonGroup
+from PyQt5.QtCore import Qt
+from random import shuffle, randint
+
+class Question():
+	def __init__(self, question, right, wrong1, wrong2, wrong3):
+		self.question = question
+		self.right = right
+		self.wrong1 = wrong1
+		self.wrong2 = wrong2
+		self.wrong3 = wrong3
+
+questions = []
+questions.append(Question("What is highest mountain?","Everest","Mont Blanc", "Kilimanjaro", "Fuji Mountain"))
+questions.append(Question('Which color does not appear on the American flag?', 'Green', 'Red', 'White', 'Blue'))
+questions.append(Question('A traditional residence of the Yakut people', 'Urasa', 'Yurt', 'Igloo', 'Hut'))
+
+
+
+app = QApplication([])
+btn_ok = QPushButton('Answer')
+main_win = QWidget()
+main_win.setWindowTitle("101 fanbase app")
+
+question = QLabel("Are you mad?")
+
+btn_ans1 = QRadioButton("Hel no")
+btn_ans2 = QRadioButton("Yes very")
+btn_ans3 = QRadioButton("Wdym?")
+btn_ans4 = QRadioButton("mentally exhausted")
+
+RadioGroup = QButtonGroup() #create a button group
+RadioGroup.addButton(btn_ans1)
+RadioGroup.addButton(btn_ans2)
+RadioGroup.addButton(btn_ans3)
+RadioGroup.addButton(btn_ans4)
+
+layout1 = QHBoxLayout()
+layout2 = QHBoxLayout()
+layout3 = QHBoxLayout()
+layout4 = QHBoxLayout()
+layout_answer = QHBoxLayout()
+
+RadioGroupBox = QGroupBox()
+RadioGroupBox_vert = QVBoxLayout()
+
+layout1.addWidget(question, alignment = Qt.AlignHCenter | Qt.AlignVCenter)
+
+layout2.addWidget(btn_ans1, alignment = Qt.AlignCenter)
+layout2.addWidget(btn_ans2, alignment = Qt.AlignCenter)
+layout3.addWidget(btn_ans3, alignment = Qt.AlignCenter)
+layout3.addWidget(btn_ans4, alignment = Qt.AlignCenter)
+layout4.addWidget(btn_ok, alignment = Qt.AlignCenter)
+
+RadioGroupBox_vert.addLayout(layout2)
+RadioGroupBox_vert.addLayout(layout3)
+
+RadioGroupBox.setLayout(RadioGroupBox_vert)
+
+lb_result = QLabel("Are you correct?")
+lb_Correct = QLabel("The answer will be here")
+
+AnsGroupBox = QGroupBox()
+AnsGroupBox_vert = QVBoxLayout()
+
+AnsGroupBox_vert.addWidget(lb_result, alignment = (Qt.AlignLeft | Qt.AlignTop))
+AnsGroupBox_vert.addWidget(lb_Correct, alignment = Qt.AlignHCenter)
+
+AnsGroupBox.setLayout(AnsGroupBox_vert)
+
+layout_vert = QVBoxLayout()
+
+layout_vert.addLayout(layout1, stretch = 8)
+layout_answer.addWidget(RadioGroupBox)
+layout_answer.addWidget(AnsGroupBox)
+AnsGroupBox.hide()
+
+layout_vert.addLayout(layout_answer, stretch = 4)
+layout_vert.setSpacing(5)
+layout_vert.addLayout(layout4)
+
+def show_question():
+    RadioGroupBox.show()
+    AnsGroupBox.hide()
+    btn_ok.setText("Answer")
+    RadioGroup.setExclusive(False)
+    btn_ans1.setChecked(False)
+    btn_ans2.setChecked(False)
+    btn_ans3.setChecked(False)
+    btn_ans4.setChecked(False)
+    RadioGroup.setExclusive(True)
+
+def show_result():
+    RadioGroupBox.hide()
+    AnsGroupBox.show()
+    btn_ok.setText("Next Question")
+
+answers = [btn_ans2, btn_ans1, btn_ans3, btn_ans4]
+
+def ask(q: Question):
+	shuffle(answers)
+	answers[0].setText(q.right)
+	answers[1].setText(q.wrong1)
+	answers[2].setText(q.wrong2)
+	answers[3].setText(q.wrong3)
+	question.setText(q.question)
+	lb_Correct.setText(q.right)
+	show_question()
+
+def show_correct(res):
+	lb_result.setText(res)
+	show_result()
+	
+def check_answer():
+	if answers[0].isChecked():
+		show_correct("Correct!")
+		main_win.score += 1
+		print("Statistics\n Total question:", main_win.total, "\n Right answer:", main_win.score)
+		print("Rating:",(main_win.score/main_win.total)*100,"%")
+	elif answers[1].isChecked() or answers[2].isChecked() or answers[3].isChecked():
+		show_correct("Incorrect!")
+		print("Statistics\n Total question:", main_win.total, "\n Right answer:", main_win.score)
+		print("Rating:",(main_win.score/main_win.total)*100,"%")
+
+def next_question():
+	main_win.total += 1
+	print("Statistics\n Total question:", main_win.total, "\n Right answer:", main_win.score)
+	cur_question = randint(0, len(questions) - 1)
+	q = questions[cur_question]
+	ask(q)
+
+def click_button():
+	if btn_ok.text() == 'Answer':
+		check_answer()
+	else:
+		next_question()
+
+
+main_win.score = 0 #user score
+main_win.total = 0 #total number of questions    
+btn_ok.clicked.connect(click_button)
+next_question()
+main_win.resize(400,300)
+main_win.setLayout(layout_vert)
+main_win.show()
+
+
+
+
+
+
+
+
+
+
+app.exec_()

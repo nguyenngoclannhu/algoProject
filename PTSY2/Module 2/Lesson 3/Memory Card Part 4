@@ -1,0 +1,191 @@
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QPushButton, QGroupBox, QVBoxLayout, QHBoxLayout, QButtonGroup
+from random import shuffle, randint
+
+app = QApplication([])
+main_win = QWidget()
+
+class Question():
+	def __init__(self, question, right, wrong1, wrong2, wrong3):
+		self.question = question
+		self.right = right
+		self.wrong1 = wrong1
+		self.wrong2 = wrong2
+		self.wrong3 = wrong3
+
+questions = list() 
+q1 = Question("What is the highest mountain in the world?", "Everest", "Mont Blanc", "Kilimanjaro", "Elbrus")
+questions.append(q1)
+
+q2 = Question('The state language of Brazil?', 'Portuguese', 'English', 'Spanish', 'Brazilian')
+questions.append(q2)
+
+q3 = Question('A traditional residence of the Yakut people', 'Urasa', 'Yurt', 'Igloo', 'Hut')
+questions.append(q3)
+
+question = QLabel("What is the highest mountain in the world?")
+
+time_label = QLabel("Time:")
+timer = QLabel("0")
+time_amount = 250
+time_remains = time_amount
+timer.setText(str(time_remains))
+
+btn1 = QRadioButton("Everest")
+btn2 = QRadioButton("Mont Blanc")
+btn3 = QRadioButton("Kilimanjaro")
+btn4 = QRadioButton("Elbrus")
+
+answer = QPushButton("Answer")
+
+RadioGroup = QButtonGroup() # this groups the radio buttons so we can control their behavior
+RadioGroup.addButton(btn1)
+RadioGroup.addButton(btn2)
+RadioGroup.addButton(btn3)
+RadioGroup.addButton(btn4)
+
+#main verticle layout
+verticle_layout = QVBoxLayout() #verticle
+
+layout_question = QHBoxLayout() #question
+Hlayout1 = QHBoxLayout() # answer 1,2
+Hlayout2 = QHBoxLayout() # answer 3,4
+layout_answer = QHBoxLayout() # answer push button
+timer_layout = QHBoxLayout() #add timer in
+
+layout_question.addWidget(question, alignment = Qt.AlignCenter)
+
+Hlayout1.addWidget(btn1, alignment = Qt.AlignCenter)
+Hlayout1.addWidget(btn2, alignment = Qt.AlignCenter)
+
+Hlayout2.addWidget(btn3, alignment = Qt.AlignCenter)
+Hlayout2.addWidget(btn4, alignment = Qt.AlignCenter)
+
+layout_answer.addWidget(answer, alignment = Qt.AlignCenter, stretch = 2)
+
+timer_layout.addWidget(time_label, alignment = Qt.AlignRight)
+timer_layout.addWidget(timer, alignment = Qt.AlignLeft, stretch = 1)
+
+#Answer group box
+RadioGroupBox = QGroupBox("Answer option")
+layout_radio = QVBoxLayout()
+
+layout_radio.addLayout(Hlayout1)
+layout_radio.addLayout(Hlayout2)
+
+RadioGroupBox.setLayout(layout_radio)
+
+#Result group box
+ResultGroupBox = QGroupBox("Test result")
+layout_result = QVBoxLayout()
+
+lb_Result = QLabel("Incorrect!")
+lb_Correct = QLabel("Correct answer!")
+
+layout_result.addWidget(lb_Result, alignment = (Qt.AlignLeft | Qt.AlignTop))
+layout_result.addWidget(lb_Correct, alignment = Qt.AlignHCenter, stretch = 2)
+
+ResultGroupBox.setLayout(layout_result)
+
+#add groupbox onto layout
+layout_groupbox = QHBoxLayout()
+layout_groupbox.addWidget(RadioGroupBox)
+layout_groupbox.addWidget(ResultGroupBox)
+ResultGroupBox.hide()
+
+verticle_layout.addLayout(layout_question)
+verticle_layout.addLayout(timer_layout)
+verticle_layout.addLayout(layout_groupbox)
+verticle_layout.addLayout(layout_answer)
+def show_result():
+	RadioGroupBox.hide()
+	ResultGroupBox.show()
+	answer.setText("Next question")
+
+def show_question():
+	RadioGroupBox.show()
+	ResultGroupBox.hide()
+	answer.setText("Answer")
+	
+	RadioGroup.setExclusive(False)
+	btn1.setChecked(False)
+	btn2.setChecked(False)
+	btn3.setChecked(False)
+	btn4.setChecked(False)
+	RadioGroup.setExclusive(True)
+
+answer_lst = [btn1, btn2, btn3, btn4]
+def ask (q: Question):
+	#set question
+	question.setText(q.question)
+	
+	shuffle(answer_lst)
+	answer_lst[0].setText(q.right)
+	answer_lst[1].setText(q.wrong1)
+	answer_lst[2].setText(q.wrong2)
+	answer_lst[3].setText(q.wrong3)
+	
+	lb_Correct.setText("Answer: " + q.right)
+	show_question()
+	
+def show_correct(result):
+	lb_Result.setText(result)
+	show_result()
+
+def check_answer():
+	if answer_lst[0].isChecked():
+		show_correct("Correct!")
+	else:
+		if answer_lst[1].isChecked() or answer_lst[2].isChecked() or answer_lst[3].isChecked():
+			show_correct("Incorrect!")
+
+def next_question():
+	cur_question = randint(0, len(questions)-1)
+	q = questions[cur_question]
+	ask(q)
+
+def click_button():
+# 	global time_remains
+# 	begin = time()*1000
+	if answer.text() == 'Next question':
+		next_question()
+	else:
+		check_answer()
+# 	end = time()*1000
+# 	time_remains = time_remains - (end - begin)
+# 	timer.setText(str(int(time_remains)))
+# 	if time_remains <= 0:
+# 		app.quit()
+# 		print("Time is over!")
+def show_time():
+	global time_remains
+	time_remains -= 1
+	if time_remains == 0:
+		print("Time's up!")
+		app.quit()
+	timer.setText(str(time_remains))
+
+timer_clk = QTimer()
+timer_clk.timeout.connect(show_time)
+timer_clk.start(100)
+
+answer.clicked.connect(click_button)
+next_question()
+main_win.setLayout(verticle_layout)
+main_win.setWindowTitle("Memory Card")
+main_win.resize(400,300)
+main_win.show()
+app.exec()
+
+
+
+
+
+
+
+
+
+
+
+
+
