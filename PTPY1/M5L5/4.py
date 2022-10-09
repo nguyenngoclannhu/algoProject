@@ -11,6 +11,7 @@ font2 = font.Font(None, 36)
 #background music
 mixer.init()
 mixer.music.load('space.ogg')
+
 mixer.music.play()
 fire_sound = mixer.Sound('fire.ogg')
 

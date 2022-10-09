@@ -69,8 +69,7 @@ layout_line2 = QHBoxLayout() # answer options or test result
 layout_line3 = QHBoxLayout() # "Answer" button
 
 layout_line1.addWidget(lb_Question,alignment=(Qt.AlignHCenter | Qt.AlignVCenter))
-layout_line2.addWidget(RadioGroupBox) 
-layout_line2.addWidget(AnsGroupBox)  
+ layout_line2.addWidget(AnsGroupBox)  
 AnsGroupBox.hide() # hide the answer panel, the question panel should be visible first 
 layout_line3.addStretch(1)
 layout_line3.addWidget(btn_OK, stretch=2) # the button should be large

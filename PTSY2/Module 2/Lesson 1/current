@@ -1,0 +1,33 @@
+import play 
+
+#create text sprite - introduction 
+hello = play.new_text(words='Try to get 21 points and beat the comp!', x=0, y=200)
+
+# create your_cards and comp_cards empty list
+your_cards = []
+comp_cards = []
+
+#create a counter to show number of steps
+steps = 0
+step_txt1 = play.new_text(words='Made steps: ', x=-20, y=-280, font_size=30)
+step_txt2 = play.new_text(words=str(steps), x=60, y=-280, font_size=30)
+
+#'add card' button
+button_add = play.new_box(color = 'yellow', border_width = 1, border_color = 'grey',x = -130, y = -160, width = 190, height = 40)
+button_add_label = play.new_text(words='Add card',font_size=30, x=-130, y=-160, color='grey')
+
+#'start me vs comp' button
+button_comp = play.new_box(color = 'red', border_width = 1, border_color = 'grey',x = 130, y = -160, width = 190, height = 40)
+button_comp_label = play.new_text(words='Start me vs comp',font_size=30, x= 130, y= -160, color='grey')
+
+@play.when_program_starts
+def start():
+	for i in range(11): 
+		card = play.new_image(image='card'+str(i+1)+'.png',size = 40, x = -150, y = 20)
+	
+
+@play.repeat_forever
+def do():
+	pass
+	
+play.start_proram()

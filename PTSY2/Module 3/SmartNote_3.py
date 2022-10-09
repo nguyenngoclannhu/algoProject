@@ -10,7 +10,11 @@ app = QApplication([])
 notes_win = QWidget()
 notes_win.setWindowTitle('Smart Notes')
 notes_win.resize(900, 600)
- 
+
+string = "" 
+for info in f:
+    s += f"{info} \n "
+text.setText(s) 
 #app window widgets
 list_notes = QListWidget()
 list_notes_label = QLabel('List of notes')
